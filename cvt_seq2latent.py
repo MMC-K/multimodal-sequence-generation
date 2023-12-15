@@ -39,8 +39,6 @@ def main():
             "index": new_pose_feature,
             "text": examples["text"]
         }
-
-    train_columns = raw_datasets["train"].column_names
         
     raw_datasets = raw_datasets.map(
         preroc_fn, 
