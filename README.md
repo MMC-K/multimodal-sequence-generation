@@ -52,3 +52,46 @@ python cvt_seq2latent.py \
     --output_path ${OUTPTU_DIR}
 ```
 
+## Sequene Generator 학습
+
+```bash
+PREPROCESSING_NUM_WORKERS=128
+LR=0.001
+SCHEDULER_TYPE="linear"
+EPOCHS=100
+DDP_TIMEOUT=36000
+
+ENCODER_MODEL_NAME_OR_PATH="klue/bert-base"
+DECODER_MODEL_NAME_OR_PATH="gpt2"
+SAVED_DATASET_PATH="preprocessed_data/proc_idx"
+OUTPUT_DIR="output/motion_gen"
+PER_DEV_TRAIN_BATCH_SIZE=128
+PER_DEV_EVAL_BATCH_SIZE=64
+GRADIENT_ACCUMULATION_STEPS=1
+EVAL_ACCUMULATION_STEPS=2
+
+
+python -m torch.distributed.launch --nproc_per_node 8 test_training.py \
+    --encoder_model_name_or_path ${ENCODER_MODEL_NAME_OR_PATH} \
+    --decoder_model_name_or_path ${DECODER_MODEL_NAME_OR_PATH} \
+    --saved_dataset_path ${SAVED_DATASET_PATH} \
+    --preprocessing_num_workers ${PREPROCESSING_NUM_WORKERS} \
+    --per_device_train_batch_size ${PER_DEV_TRAIN_BATCH_SIZE} \
+    --per_device_eval_batch_size ${PER_DEV_EVAL_BATCH_SIZE} \
+    --lr_scheduler_type ${SCHEDULER_TYPE} \
+    --learning_rate ${LR} \
+    --num_train_epochs ${EPOCHS} \
+    --ddp_timeout ${DDP_TIMEOUT} \
+    --save_strategy "epoch" \
+    --evaluation_strategy "epoch" \
+    --do_train --do_eval \
+    --overwrite_output_dir \
+    --gradient_accumulation_steps ${GRADIENT_ACCUMULATION_STEPS} \
+    --eval_accumulation_steps ${EVAL_ACCUMULATION_STEPS} \
+    --log_level "error" \
+    --output_dir ${OUTPUT_DIR}
+
+
+```
+
+
