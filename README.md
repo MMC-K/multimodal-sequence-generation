@@ -18,15 +18,15 @@ raw_datasets.save_to_disk("preproc_data/proc")
 ## VQVAE 학습
 
 ```bash
-PREPROC_DATA_PATH="preprocessed_data/proc_shard10"
+PREPROC_DATA_PATH="preprocessed_data/proc"
 PER_DEV_TRAIN_BATCH_SIZE=128
 PER_DEV_EVAL_BATCH_SIZE=128
-OUTPTU_DIR="test_output2/proc_shard10"
+OUTPTU_DIR="output/vqvae/proc"
 CHECKPOINTING_STEPS=1000
 LOSS_BETA=1.0
 LOADER_NUM_WORKERS=16
 
-accelerate launch test_model.py \
+accelerate launch run_vqvae.py \
     --preproc_data_path ${PREPROC_DATA_PATH} \
     --per_device_train_batch_size ${PER_DEV_TRAIN_BATCH_SIZE} \
     --per_device_eval_batch_size ${PER_DEV_EVAL_BATCH_SIZE} \
@@ -37,6 +37,18 @@ accelerate launch test_model.py \
 ```
 
 
+## Convert sequence feature to latent index
 
+```bash
+PREPROC_DATA_PATH="preprocessed_data/proc"
+VQVAE_MODEL_DIR="output/vqvae/proc"
+VQVAE_MODEL_PATH=${VQVAE_MODEL_DIR}/pytorch_model.bin
+OUTPTU_DIR="preprocessed_data/proc_idx"
 
+python cvt_seq2latent.py \
+--saved_dataset_path
+    --vqvae_model_path ${VQVAE_MODEL_PATH} \
+    --saved_dataset_path ${PREPROC_DATA_PATH} \
+    --output_path ${OUTPTU_DIR}
+```
 
